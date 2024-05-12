@@ -1,0 +1,16 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: butija-db_owner
+      POSTGRES_PASSWORD: G4DXRyoOYa1k
+      POSTGRES_DB: butija-db
+    volumes:
+      - butija-db-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+
+volumes:
+  butija-db-data:
