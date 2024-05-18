@@ -7,5 +7,12 @@ export type Record = {
   name: string;
   amount: Currency;
   date: Date;
-  budgetItem: Expense | Income;
 } & Traceable;
+
+export type IncomeRecord = {
+  income: Income;
+} & Record;
+
+export type ExpenseRecord = {
+  expense: Expense;
+} & Record;

@@ -1,3 +1,6 @@
+-- CreateEnum
+CREATE TYPE "ExpenseSection" AS ENUM ('INVESTIMENT', 'FIXED', 'VARIABLE');
+
 -- CreateTable
 CREATE TABLE "Account" (
     "id" TEXT NOT NULL,
@@ -45,40 +48,15 @@ CREATE TABLE "VerificationToken" (
 );
 
 -- CreateTable
-CREATE TABLE "ExpenseSection" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-    "percentage" INTEGER NOT NULL,
-
-    CONSTRAINT "ExpenseSection_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Category" (
-    "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
-
-    CONSTRAINT "Category_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "BudgetItem" (
+CREATE TABLE "Expense" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
+    "category" TEXT NOT NULL,
+    "section" "ExpenseSection" NOT NULL,
+    "expectedDay" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "categoryId" TEXT NOT NULL,
-    "budgetId" TEXT,
-
-    CONSTRAINT "BudgetItem_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Expense" (
-    "id" TEXT NOT NULL,
-    "budgetItemId" TEXT NOT NULL,
-    "expenseSectionId" TEXT NOT NULL,
     "budgetId" TEXT,
 
     CONSTRAINT "Expense_pkey" PRIMARY KEY ("id")
@@ -87,23 +65,41 @@ CREATE TABLE "Expense" (
 -- CreateTable
 CREATE TABLE "Income" (
     "id" TEXT NOT NULL,
-    "budgetItemId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "category" TEXT NOT NULL,
+    "expectedDay" INTEGER NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
     "budgetId" TEXT,
 
     CONSTRAINT "Income_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "Record" (
+CREATE TABLE "ExpenseRecord" (
     "id" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "amount" DOUBLE PRECISION NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
-    "budgetItemId" TEXT NOT NULL,
+    "expenseId" TEXT NOT NULL,
 
-    CONSTRAINT "Record_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "ExpenseRecord_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "IncomeRecord" (
+    "id" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "amount" DOUBLE PRECISION NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+    "incomeId" TEXT NOT NULL,
+
+    CONSTRAINT "IncomeRecord_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -136,28 +132,16 @@ ALTER TABLE "Account" ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId"
 ALTER TABLE "Session" ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "BudgetItem" ADD CONSTRAINT "BudgetItem_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES "Category"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "BudgetItem" ADD CONSTRAINT "BudgetItem_budgetId_fkey" FOREIGN KEY ("budgetId") REFERENCES "Budget"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Expense" ADD CONSTRAINT "Expense_budgetItemId_fkey" FOREIGN KEY ("budgetItemId") REFERENCES "BudgetItem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Expense" ADD CONSTRAINT "Expense_expenseSectionId_fkey" FOREIGN KEY ("expenseSectionId") REFERENCES "ExpenseSection"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "Expense" ADD CONSTRAINT "Expense_budgetId_fkey" FOREIGN KEY ("budgetId") REFERENCES "Budget"("id") ON DELETE SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Income" ADD CONSTRAINT "Income_budgetItemId_fkey" FOREIGN KEY ("budgetItemId") REFERENCES "BudgetItem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Income" ADD CONSTRAINT "Income_budgetId_fkey" FOREIGN KEY ("budgetId") REFERENCES "Budget"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Record" ADD CONSTRAINT "Record_budgetItemId_fkey" FOREIGN KEY ("budgetItemId") REFERENCES "BudgetItem"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ExpenseRecord" ADD CONSTRAINT "ExpenseRecord_expenseId_fkey" FOREIGN KEY ("expenseId") REFERENCES "Expense"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "IncomeRecord" ADD CONSTRAINT "IncomeRecord_incomeId_fkey" FOREIGN KEY ("incomeId") REFERENCES "Income"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Budget" ADD CONSTRAINT "Budget_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

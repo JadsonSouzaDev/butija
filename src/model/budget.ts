@@ -1,24 +1,19 @@
 import { type Currency } from "./currency";
 import { type Traceable } from "./trace";
 
-export type Category = {
-  id: string;
-  name: string;
-};
-
 interface BudgetItem extends Traceable {
   id: string;
   name: string;
   amount: Currency;
-  category: Category;
-  expectedDate: Date;
+  category: string;
+  expectedDay: number;
 }
 
-export type ExpenseSection = {
-  id: string;
-  name: string;
-  percentage: number;
-};
+export enum ExpenseSection {
+  INVESTIMENT = "INVESTIMENT",
+  FIXED = "FIXED",
+  VARIABLE = "VARIABLE",
+}
 
 export type Expense = {
   section: ExpenseSection;
